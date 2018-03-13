@@ -1,7 +1,9 @@
 package clientwsgeoip;
 
+import java.net.URL;
 import java.util.Scanner;
-import net.webservicex.GeoIP;
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
 
 /**
  *
@@ -17,34 +19,42 @@ public class ClientWSGeoIP {
         switch(new Scanner(System.in).nextInt()) {
             case 1:
                 System.out.print("Enter an IP: ");
-                GeoIP IP = getGeoIP(new Scanner(System.in).nextLine());
-                System.out.println("IP = " + IP.getIP());
-                System.out.println("Country name = " + IP.getCountryName());
-                System.out.println("Country code = " + IP.getCountryCode());
+                String source2 = new Scanner(System.in).nextLine();
+                String w = "http://www.webservicex.net/geoipservice.asmx/GetGeoIP";
+                URL url1 = new URL(w);
+                Scanner scan1 = new Scanner(url1.openStream());
+                String source1 = new String();
+                while(scan1.hasNext()){
+                    source1 += scan1.nextLine();
+                }
+                Serializer serializer1 = new Persister();
+                IP ip1 = new IP();
+                serializer1.read(ip1,source2);
+                System.out.println("IP = " + ip1.getIP());
+                System.out.println("Country name = " + ip1.getCountryName());
+                System.out.println("Country code = " + ip1.getCountryCode());
                 break;
             
             case 2:
-                System.out.println("IP = " + getGeoIPContext().getIP());
-                System.out.println("Country name = " + getGeoIPContext().getCountryName());
-                System.out.println("Country code = " + getGeoIPContext().getCountryCode());
+                String s = "http://www.webservicex.net/geoipservice.asmx/GetGeoIPContext";
+                URL url = new URL(s);
+                Scanner scan = new Scanner(url.openStream());
+                String source = new String();
+                while(scan.hasNext()){
+                    source += scan.nextLine();
+                }
+                Serializer serializer = new Persister();
+                IP ip = new IP();
+                serializer.read(ip,source);
+                
+                System.out.println("IP = " + ip.getIP());
+                System.out.println("Country name = " + ip.getCountryName());
+                System.out.println("Country code = " + ip.getCountryCode());
                 break;
                 
            default:
                 System.out.println("The number must be between 1-2.");
                 break;
        }
-    }
-
-
-    private static GeoIP getGeoIP(java.lang.String ipAddress) {
-        net.webservicex.GeoIPService service = new net.webservicex.GeoIPService();
-        net.webservicex.GeoIPServiceSoap port = service.getGeoIPServiceSoap();
-        return port.getGeoIP(ipAddress);
-    }
-
-    private static GeoIP getGeoIPContext() {
-        net.webservicex.GeoIPService service = new net.webservicex.GeoIPService();
-        net.webservicex.GeoIPServiceSoap port = service.getGeoIPServiceSoap();
-        return port.getGeoIPContext();
     }
 }
